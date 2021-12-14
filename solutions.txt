@@ -90,3 +90,98 @@ dmap←{(⊂zeromap ⍵),(⊂onemap ⍵),(⊂twomap ⍵),(⊂threemap ⍵),(⊂f
 d9←⊃⎕nget'in9.txt'1
 +/⍣2{⍵+b∧⍵}⊃4=+/(⊂b)<{((¯1 1)⊖¨⍵),((¯1 1)⌽¨⍵)}2⍴⊂b←1⊖↑(2⍴(⊂10⍴⍨⍴⊃b)),b←{10,⍵,10}¨⍎¨¨d9
 ×/1↓4↑{{⍵[⍒⍵]}1⌷[1]⍵}{⍺,(≢⍵)}⌸,({(9≠b)∧⊃∨/(¯1 1 ⊖¨2⍴⊂⍵),(¯1 0 1)⌽¨3⍴⊂⍵}⍣100){(⍴⍵)⍴(,⍵)∧⍳⍴,⍵}0≠{⍵+b∧⍵}⊃4=+/(⊂b)<{((¯1 1)⊖¨⍵),((¯1 1)⌽¨⍵)}2⍴⊂b←1⊖↑(2⍴(⊂9⍴⍨⍴⊃b)),b←{9,⍵,9}¨⍎¨¨d9
+
+## D10
+d10←⊃⎕nget'in10.txt'1
+ob←'([{<'
+cb←')]}>'
+score ← 3 57 1197 25137
+next←{
+    last_open current_pos←⍵
+    current_pos=≢⍺:0
+    ⍺[current_pos]∊ob:⍺ ∇(⍺[current_pos],last_open)(current_pos+1)
+    last_open[0]=ob/⍨cb=⍺[current_pos]:⍺ ∇(1↓last_open)(current_pos+1)
+    ⊃score/⍨cb=⍺[current_pos]
+}
+next2←{
+     last_open current_pos←⍵
+     current_pos=≢⍺:last_open
+     ⍺[current_pos]∊ob:⍺ ∇(⍺[current_pos],last_open)(current_pos+1)
+     last_open[0]=ob/⍨cb=⍺[current_pos]:⍺ ∇(1↓last_open)(current_pos+1)
+     0
+ }
+ac_score←1 2 3 4
+{⊃⊃(2÷⍨1-⍨⍴⍵)⊃⍵[⍋⍵]}{⍺+⍵×5}/¨⌽¨{ac_score/⍨ob=⍵}¨¨a/⍨0≢¨a←{⍵ next2 ⍬ 0}¨d10
+
+## D11
+d11←⍎¨¨⊃⎕nget'in11.txt'1
+flash←{
+    count m←⍵
+    ⍺←(⍴m)⍴0
+    c←+/+/t←9<m
+    c=0:count,(⊂m)
+    fs←⊃+/,(¯1 0 1)∘.⊖(¯1 0 1)⌽¨3⍴(⊂¯1⊖¯1⌽(2+⍴t)↑t)
+    fs←(~t)∧fs[1+⍳2-⍨⍴fs]
+    na←(⍺∨t)
+    (na)∇(count+c)((~na)∧m+fs)
+}
+({count mat←⍵⋄nc nm←flash2 0 (mat+1)⋄ (count+nc),⊂nm}⍣100) 0 d11
+({step count mat←⍵⋄0=(+/+/mat≠0):step count mat⋄nc nm←flash2 0 (mat+1)⋄ (step+1),(count+nc),⊂nm}⍣1000) 0 0 d11
+
+## D12
+
+d12←'-' segs¨⊃⎕nget'in12.txt'1
+verts←{⍺}⌸↑,/d12
+am←0⍴⍨2⍴⍴verts
+am[{verts⍳⍵}¨d12]←1
+am←am∨⍉am
+small←1 1 0 0 1 1 1 1 1 1 1 0
+paths←{
+    graph←⍺
+    current end←⍵
+    current=end:1
+    0=∨/current⌷graph:0
+
+    choices←(⍳⍴verts)/⍨current⌷graph
+    (current⌷[0]graph)←(current⌷graph)∧~current⌷small
+    (current⌷[1]graph)←(current⌷graph)∧~current⌷small
+
+    +/{graph paths ⍵ end}¨choices
+}
+am paths 7 4
+
+paths2←{
+    graph←⍺
+    current end special←⍵
+    current=end:1
+    0=∨/current⌷graph:0
+    choices←(⍳⍴verts)/⍨current⌷graph
+    special=current:+/{graph paths ⍵ end}¨choices
+
+    (current⌷[0]graph)←(current⌷graph)∧~current⌷small
+    (current⌷[1]graph)←(current⌷graph)∧~current⌷small
+
+    +/{graph paths2 ⍵ end special}¨choices
+}
+(6× 5874)-⍨+/{am paths2 7 4 ⍵}¨0 1 5 6 8 9 10
+
+
+## D13
+
+d13←⊃⎕nget'in13.txt'1
+stars folds←ex13⊆⍨~(⊂'')⍷d13
+stars←⌽∘⍎¨stars
+g←0⍴⍨1+⌈⌿↑stars
+g[stars]←1
+
+folds←⍎¨'y=' ⎕R '0,'¨⊢'x=' ⎕R '1,'¨⊢'fold along ' ⎕R '' ⊢ folds
+g{a w←⍵ ⋄{f s←↑¨⍵⊂⍨(0 w)∊⍨⍳⍴⍵⋄f∨(⊖1↓s)}(↓⍉⍣a)⍺} 0 7
+
+x←{1⊃⍵}¨stars
+y←{⊃⍵}¨stars
+f←{(⍵×⍺>⍵)+⍺{(⍺-(⍵-⍺))^⍺<⍵}¨⍵}
+x1←40f 81f 163f 327f 655f x
+y1←6f 13f 27f 55f 111f 223f 447f y
+z←6 40⍴0
+((,z)/,z)←'#'
+((0=,z)/,z)←' '
